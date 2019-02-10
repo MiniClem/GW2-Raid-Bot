@@ -40,8 +40,6 @@ public class RaidBot {
     //TODO: This should be moved to it's own settings thing
     HashMap<String, String> raidLeaderRoleCache = new HashMap<>();
 
-    Database db;
-
     /**
      * Create a new instance of the raid bot with the specified JDA api
      * @param jda The API for the bot to use
@@ -51,12 +49,7 @@ public class RaidBot {
 
         this.jda = jda;
         jda.addEventListener(new DMHandler(this), new ChannelMessageHandler(), new ReactionHandler());
-        try {
-            db = new Database(Variables.getINSTANCE().getStringProperty(DATABASE.toString()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        db.connect();
+        Database.connect();
         RaidManager.loadRaids();
 
         CommandRegistry.addCommand("help", new HelpCommand());
@@ -139,7 +132,7 @@ public class RaidBot {
             return raidLeaderRoleCache.get(serverId);
         } else {
             try {
-                QueryResult results = db.query("SELECT `raid_leader_role` FROM `serverSettings` WHERE `serverId` = ?",
+                QueryResult results = getDatabase().query("SELECT `raid_leader_role` FROM `serverSettings` WHERE `serverId` = ?",
                         new String[]{serverId});
                 if (results.getResults().next()) {
                     raidLeaderRoleCache.put(serverId, results.getResults().getString("raid_leader_role"));

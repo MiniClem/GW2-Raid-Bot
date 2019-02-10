@@ -14,19 +14,11 @@ class VariablesTest {
 
 	@Test
 	void getInstance() {
-		try {
-			Assert.assertNotNull(Variables.getINSTANCE());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Assert.assertNotNull(Variables.getINSTANCE());
 	}
 
 	@Test
 	void getStringProperty() {
-		try {
-			Assertions.assertEquals(Variables.getINSTANCE().getStringProperty(TEST.toString()), testString);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Assertions.assertEquals(Variables.getINSTANCE().getStringProperty(TEST.toString()), testString);
 	}
 }

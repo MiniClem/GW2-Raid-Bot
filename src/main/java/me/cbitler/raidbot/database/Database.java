@@ -1,127 +1,180 @@
 package me.cbitler.raidbot.database;
 
+import me.cbitler.raidbot.utility.Variables;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.*;
-import java.util.List;
+
+import static me.cbitler.raidbot.utility.Variables.RaidBotProperty.DATABASE;
+import static me.cbitler.raidbot.utility.Variables.RaidBotProperty.TEST_DATABASE;
+import static me.cbitler.raidbot.utility.Variables.RaidBotProperty.VERSION_DATABASE;
 
 /**
  * Class for managing the SQLite database for this bot
+ *
  * @author Christopher Bitler
  */
-public class Database {
-    String databaseName;
-    Connection connection;
+public class Database implements DatabaseOpenHelper {
+	private static Database INSTANCE;
+	private static Connection connection;
 
-    //Thee are the queries for creating the tables
+	@Override
+	public void onCreate() {
+		try {
+			tableInits();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
-    String raidTableInit = "CREATE TABLE IF NOT EXISTS raids (\n"
-            + " raidId text PRIMARY KEY, \n"
-            + " serverId text NOT NULL, \n"
-            + " channelId text NOT NULL, \n"
-            + " leader text NOT NULL, \n"
-            + " `name` text NOT NULL, \n"
-            + " `description` text, \n"
-            + " `date` text NOT NULL, \n"
-            + " `time` text NOT NULL, \n"
-            + " roles text NOT NULL);";
+	@Override
+	public void onUpgrade() {
+		try {
+			tableUpgrade();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
-    String raidUsersTableInit = "CREATE TABLE IF NOT EXISTS raidUsers (\n"
-            + " userId text, \n"
-            + " username text, \n"
-            + " spec text, \n"
-            + " role text, \n"
-            + " raidId text)";
+	/**
+	 * Create a new database with the specific filename provided by the configuration.properties
+	 */
+	private Database() {
+		try {
+			String url = "jdbc:sqlite:" + Variables.getINSTANCE().getStringProperty(DATABASE.toString());
+			connection = DriverManager.getConnection(url);
+		} catch (SQLException e) {
+			System.out.println("Database connection error");
+			System.exit(1);
+		}
+	}
 
-    String raidUsersFlexRolesTableInit = "CREATE TABLE IF NOT EXISTS raidUsersFlexRoles (\n"
-            + " userId text, \n"
-            + " username text, \n"
-            + " spec text, \n"
-            + " role text, \n"
-            + " raidId text)";
+	/**
+	 * Connect to the SQLite database and create the tables if they don't exist
+	 */
+	public static void connect() {
+		if (INSTANCE == null) {
+			INSTANCE = new Database();
+		}
+		INSTANCE.onCreate();
+		INSTANCE.onUpgrade();
+	}
 
-    String botServerSettingsInit = "CREATE TABLE IF NOT EXISTS serverSettings (\n"
-            + " serverId text PRIMARY KEY, \n"
-            + " raid_leader_role text)";
+	public static Database getDatabase(){
+		if (INSTANCE != null){
+			return INSTANCE;
+		}else {
+			throw new NullPointerException("Database not initialized, please call connect() before trying to send request");
+		}
+	}
 
-    /**
-     * Create a new database with the specific filename
-     * @param databaseName The filename/location of the SQLite database
-     */
-    public Database(String databaseName) {
-        this.databaseName = databaseName;
-    }
+	/**
+	 * Run a query and return the results using the specified query and parameters
+	 *
+	 * @param query The query with ?s where the parameters need to be placed
+	 * @param data  The parameters to put in the query
+	 * @return QueryResult representing the statement used and the ResultSet
+	 * @throws SQLException
+	 */
+	public static QueryResult query(String query, String[] data) throws SQLException {
+		PreparedStatement stmt = connection.prepareStatement(query);
+		int i = 1;
+		for (String input : data) {
+			stmt.setObject(i, input);
+			i++;
+		}
 
-    /**
-     * Connect to the SQLite database and create the tables if they don't exist
-     */
-    public void connect() {
-        String url = "jdbc:sqlite:" + databaseName;
-        try {
-            connection = DriverManager.getConnection(url);
-        } catch (SQLException e) {
-            System.out.println("Database connection error");
-            System.exit(1);
-        }
+		ResultSet rs = stmt.executeQuery();
 
-        try {
-            tableInits();
-        } catch (SQLException e) {
-            System.out.println("Couldn't create tables");
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
+		return new QueryResult(stmt, rs);
+	}
 
-    /**
-     * Run a query and return the results using the specified query and parameters
-     * @param query The query with ?s where the parameters need to be placed
-     * @param data The parameters to put in the query
-     * @return QueryResult representing the statement used and the ResultSet
-     * @throws SQLException
-     */
-    public QueryResult query(String query, String[] data) throws SQLException {
-        PreparedStatement stmt = connection.prepareStatement(query);
-        int i = 1;
-        for(String input : data) {
-            stmt.setObject(i, input);
-            i++;
-        }
+	/**
+	 * Run an update query with the specified parameters
+	 *
+	 * @param query The query with ?s where the parameters need to be placed
+	 * @param data  The parameters to put in the query
+	 * @throws SQLException
+	 */
+	public void update(String query, String[] data) throws SQLException {
+		PreparedStatement stmt = connection.prepareStatement(query);
+		int i = 1;
+		for (String input : data) {
+			stmt.setObject(i, input);
+			i++;
+		}
 
-        ResultSet rs = stmt.executeQuery();
+		stmt.execute();
+		stmt.close();
+	}
 
-        return new QueryResult(stmt, rs);
-    }
+	/**
+	 * Create the database tables.
+	 *
+	 * @throws SQLException
+	 */
+	private void tableInits() throws SQLException {
+		try {
+			connection.setAutoCommit(false);
+			StringBuilder stringBuilder = new StringBuilder();
+			Files.lines(Paths.get(Database.class.getClassLoader().getResource("database-1.sql").toURI()), StandardCharsets.UTF_8)
+					.forEach(stringBuilder::append);
 
-    /**
-     * Run an update query with the specified parameters
-     * @param query The query with ?s where the parameters need to be placed
-     * @param data The parameters to put in the query
-     * @throws SQLException
-     */
-    public void update(String query, String[] data) throws SQLException {
-        PreparedStatement stmt = connection.prepareStatement(query);
-        int i = 1;
-        for(String input : data) {
-            stmt.setObject(i, input);
-            i++;
-        }
+			String[] inst = stringBuilder.toString().split(";");
 
-        stmt.execute();
-        stmt.close();
-    }
+			for (String s : inst){
+				connection.createStatement().execute(s);
+			}
 
-    /**
-     * Create the database tables. Also alters the raid table to add the leader column if it doesn't exist.
-     * @throws SQLException
-     */
-    public void tableInits() throws SQLException {
-        connection.createStatement().execute(raidTableInit);
-        connection.createStatement().execute(raidUsersTableInit);
-        connection.createStatement().execute(raidUsersFlexRolesTableInit);
-        connection.createStatement().execute(botServerSettingsInit);
+			connection.commit();
+		} catch (IOException | SQLException | URISyntaxException | NullPointerException e) {
+			e.printStackTrace();
+		} finally {
+			connection.setAutoCommit(true);
+		}
+	}
 
-        try {
-            connection.createStatement().execute("ALTER TABLE raids ADD COLUMN leader text");
-            connection.createStatement().execute("ALTER TABLE raids ADD COLUMN `description` text");
-        } catch (Exception e) { }
-    }
+	/**
+	 * Alters tables to add columns if it doesn't exist.
+	 * @throws SQLException
+	 */
+	private void tableUpgrade() throws SQLException {
+		int databaseVersion = Integer.valueOf(Variables.getINSTANCE().getStringProperty(VERSION_DATABASE.toString()));
+		StringBuilder stringBuilder = new StringBuilder();
+		String prefixFilename = "database-";
+		String suffixFilename = ".sql";
+
+		synchronized (connection) {
+			try {
+				connection.setAutoCommit(false);
+
+				for (int i = 2; i <= databaseVersion; i++) {
+					Files.lines(Paths.get(Database.class.getClassLoader().getResource(prefixFilename + String.valueOf(i) + suffixFilename).toURI()))
+							.forEach(stringBuilder::append);
+
+					// here is our splitter ! We use ";" as a delimiter for each request
+					// then we are sure to have well formed statements
+					String[] inst = stringBuilder.toString().split(";");
+
+					for (String s : inst){
+						connection.createStatement().execute(s);
+					}
+
+					stringBuilder = new StringBuilder();
+				}
+
+				connection.commit();
+
+			} catch (IOException | URISyntaxException e) {
+				e.printStackTrace();
+			} finally {
+				connection.setAutoCommit(true);
+			}
+		}
+	}
 }
+

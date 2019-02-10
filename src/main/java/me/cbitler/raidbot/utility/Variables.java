@@ -19,9 +19,14 @@ public class Variables {
 		loadFromPropertyFile();
 	}
 
-	public static Variables getINSTANCE() throws IOException {
+	public static Variables getINSTANCE() {
 		if(INSTANCE == null) {
-			INSTANCE = new Variables();
+			try {
+				INSTANCE = new Variables();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.err.println("Couldn't load properties values !");
+			}
 		}   
 		return INSTANCE;
 	}
@@ -40,7 +45,7 @@ public class Variables {
 	 * Key names from the property file
 	 */
 	public enum RaidBotProperty{
-		DATABASE, DISCORD_TOKEN, RAIDAR_USERNAME, RAIDAR_PASSWORD, TEST
+		DATABASE, TEST_DATABASE, VERSION_DATABASE, DISCORD_TOKEN, RAIDAR_USERNAME, RAIDAR_PASSWORD, TEST
 	}
 
 	public String getStringProperty(String key){
