@@ -118,7 +118,7 @@ public class RaidBot {
      * @return The database that the bot is using
      */
     public Database getDatabase() {
-        return db;
+        return null;
     }
 
     /**
@@ -152,19 +152,19 @@ public class RaidBot {
      * @param role The role name
      */
     public void setRaidLeaderRole(String serverId, String role) {
-        raidLeaderRoleCache.put(serverId, role);
-        try {
-            db.update("INSERT INTO `serverSettings` (`serverId`,`raid_leader_role`) VALUES (?,?)",
-                    new String[] { serverId, role});
-        } catch (SQLException e) {
-            //TODO: There is probably a much better way of doing this
-            try {
-                db.update("UPDATE `serverSettings` SET `raid_leader_role` = ? WHERE `serverId` = ?",
-                        new String[] { role, serverId });
-            } catch (SQLException e1) {
-                // Not much we can do if there is also an insert error
-            }
-        }
+//        raidLeaderRoleCache.put(serverId, role);
+//        try {
+//            db.update("INSERT INTO `serverSettings` (`serverId`,`raid_leader_role`) VALUES (?,?)",
+//                    new String[] { serverId, role});
+//        } catch (SQLException e) {
+//            //TODO: There is probably a much better way of doing this
+//            try {
+//                db.update("UPDATE `serverSettings` SET `raid_leader_role` = ? WHERE `serverId` = ?",
+//                        new String[] { role, serverId });
+//            } catch (SQLException e1) {
+//                // Not much we can do if there is also an insert error
+//            }
+//        }
     }
 
     /**

@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static me.cbitler.raidbot.database.Database.getDatabase;
+
 /**
  * Serves as a manager for all of the raids. This includes creating, loading, and deleting raids
  * @author Christopher Bitler
@@ -97,11 +99,8 @@ public class RaidManager {
      * Finally, it queries the raid users' flex roles and inserts those to the raids
      */
     public static void loadRaids() {
-        RaidBot bot = RaidBot.getInstance();
-        Database db = bot.getDatabase();
-
         try {
-            QueryResult results = db.query("SELECT * FROM `raids`", new String[] {});
+            QueryResult results = getDatabase().query("SELECT * FROM `raids`", new String[] {});
             while (results.getResults().next()) {
                 String name = results.getResults().getString("name");
                 String description = results.getResults().getString("description");
@@ -133,7 +132,7 @@ public class RaidManager {
             results.getResults().close();
             results.getStmt().close();
 
-            QueryResult userResults = db.query("SELECT * FROM `raidUsers`", new String[] {});
+            QueryResult userResults = getDatabase().query("SELECT * FROM `raidUsers`", new String[] {});
 
             while(userResults.getResults().next()) {
                 String id = userResults.getResults().getString("userId");
@@ -148,7 +147,7 @@ public class RaidManager {
                 }
             }
 
-            QueryResult userFlexRolesResults = db.query("SELECT * FROM `raidUsersFlexroles`", new String[] {});
+            QueryResult userFlexRolesResults = getDatabase().query("SELECT * FROM `raidUsersFlexroles`", new String[] {});
 
             while(userFlexRolesResults.getResults().next()) {
                 String id = userFlexRolesResults.getResults().getString("userId");

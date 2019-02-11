@@ -81,15 +81,18 @@ public class Database implements DatabaseOpenHelper {
 	 * @throws SQLException
 	 */
 	public static QueryResult query(String query, String[] data) throws SQLException {
-		PreparedStatement stmt = connection.prepareStatement(query);
-		int i = 1;
-		for (String input : data) {
-			stmt.setObject(i, input);
-			i++;
+		PreparedStatement stmt;
+		ResultSet rs;
+		synchronized (connection) {
+			stmt = connection.prepareStatement(query);
+			int i = 1;
+			for (String input : data) {
+				stmt.setObject(i, input);
+				i++;
+			}
+
+			rs = stmt.executeQuery();
 		}
-
-		ResultSet rs = stmt.executeQuery();
-
 		return new QueryResult(stmt, rs);
 	}
 
