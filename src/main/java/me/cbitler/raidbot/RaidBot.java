@@ -111,7 +111,7 @@ public class RaidBot {
     public JDA getJda() {
         return jda;
     }
-    
+
     /**
      * Get the raid leader role for a specific server.
      * This works by caching the role once it's retrieved once, and returning the default if a server hasn't set one.
