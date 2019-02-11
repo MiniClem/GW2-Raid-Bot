@@ -80,7 +80,7 @@ public class Database implements DatabaseOpenHelper {
 	 * @return QueryResult representing the statement used and the ResultSet
 	 * @throws SQLException
 	 */
-	public static QueryResult query(String query, String[] data) throws SQLException {
+	public QueryResult query(String query, String[] data) throws SQLException {
 		PreparedStatement stmt;
 		ResultSet rs;
 		synchronized (connection) {

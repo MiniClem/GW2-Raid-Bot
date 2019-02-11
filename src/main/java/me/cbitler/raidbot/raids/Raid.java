@@ -7,6 +7,8 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import java.sql.SQLException;
 import java.util.*;
 
+import static me.cbitler.raidbot.database.Database.getDatabase;
+
 /**
  * Represents a raid and has methods for adding/removing users, user flex roles, etc
  */
@@ -203,7 +205,7 @@ public class Raid {
 
         if(db_insert) {
             try {
-                RaidBot.getInstance().getDatabase().update("INSERT INTO `raidUsers` (`userId`, `username`, `spec`, `role`, `raidId`)" +
+                getDatabase().update("INSERT INTO `raidUsers` (`userId`, `username`, `spec`, `role`, `raidId`)" +
                         " VALUES (?,?,?,?,?)", new String[]{
                         id,
                         name,
@@ -242,7 +244,7 @@ public class Raid {
 
         if(db_insert) {
             try {
-                RaidBot.getInstance().getDatabase().update("INSERT INTO `raidUsersFlexRoles` (`userId`, `username`, `spec`, `role`, `raidId`)" +
+                getDatabase().update("INSERT INTO `raidUsersFlexRoles` (`userId`, `username`, `spec`, `role`, `raidId`)" +
                         " VALUES (?,?,?,?,?)", new String[] {
                         id,
                         name,
@@ -295,9 +297,9 @@ public class Raid {
         }
 
         try {
-            RaidBot.getInstance().getDatabase().update("DELETE FROM `raidUsers` WHERE `userId` = ? AND `raidId` = ?",
+            getDatabase().update("DELETE FROM `raidUsers` WHERE `userId` = ? AND `raidId` = ?",
                     new String[] {id, getMessageId()});
-            RaidBot.getInstance().getDatabase().update("DELETE FROM `raidUsersFlexRoles` WHERE `userId` = ? and `raidId` = ?",
+            getDatabase().update("DELETE FROM `raidUsersFlexRoles` WHERE `userId` = ? and `raidId` = ?",
                     new String[] {id, getMessageId()});
         } catch (SQLException e) {
             e.printStackTrace();

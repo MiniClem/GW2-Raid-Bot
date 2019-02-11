@@ -1,6 +1,9 @@
 package me.cbitler.raidbot;
 
-import me.cbitler.raidbot.commands.*;
+import me.cbitler.raidbot.commands.CommandRegistry;
+import me.cbitler.raidbot.commands.EndRaidCommand;
+import me.cbitler.raidbot.commands.HelpCommand;
+import me.cbitler.raidbot.commands.InfoCommand;
 import me.cbitler.raidbot.creation.CreationStep;
 import me.cbitler.raidbot.database.Database;
 import me.cbitler.raidbot.database.QueryResult;
@@ -11,15 +14,11 @@ import me.cbitler.raidbot.raids.PendingRaid;
 import me.cbitler.raidbot.raids.RaidManager;
 import me.cbitler.raidbot.selection.SelectionStep;
 import me.cbitler.raidbot.utility.GuildCountUtil;
-import me.cbitler.raidbot.utility.Variables;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
-
-import static me.cbitler.raidbot.utility.Variables.RaidBotProperty.DATABASE;
 
 /**
  * Class representing the raid bot itself.
@@ -112,15 +111,7 @@ public class RaidBot {
     public JDA getJda() {
         return jda;
     }
-
-    /**
-     * Get the database that the bot is using
-     * @return The database that the bot is using
-     */
-    public Database getDatabase() {
-        return null;
-    }
-
+    
     /**
      * Get the raid leader role for a specific server.
      * This works by caching the role once it's retrieved once, and returning the default if a server hasn't set one.
@@ -132,7 +123,7 @@ public class RaidBot {
             return raidLeaderRoleCache.get(serverId);
         } else {
             try {
-                QueryResult results = getDatabase().query("SELECT `raid_leader_role` FROM `serverSettings` WHERE `serverId` = ?",
+                QueryResult results = Database.getDatabase().query("SELECT `raid_leader_role` FROM `serverSettings` WHERE `serverId` = ?",
                         new String[]{serverId});
                 if (results.getResults().next()) {
                     raidLeaderRoleCache.put(serverId, results.getResults().getString("raid_leader_role"));

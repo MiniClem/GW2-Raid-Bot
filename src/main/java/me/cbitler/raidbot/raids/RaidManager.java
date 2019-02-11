@@ -5,9 +5,11 @@ import me.cbitler.raidbot.database.Database;
 import me.cbitler.raidbot.database.QueryResult;
 import me.cbitler.raidbot.utility.Reactions;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Emote;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.TextChannel;
 
-import javax.imageio.stream.IIOByteBuffer;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -67,13 +69,10 @@ public class RaidManager {
      * @return True if inserted, false otherwise
      */
     private static boolean insertToDatabase(PendingRaid raid, String messageId, String serverId, String channelId) {
-        RaidBot bot = RaidBot.getInstance();
-        Database db = bot.getDatabase();
-
         String roles = formatRolesForDatabase(raid.getRolesWithNumbers());
 
         try {
-            db.update("INSERT INTO `raids` (`raidId`, `serverId`, `channelId`, `leader`, `name`, `description`, `date`, `time`, `roles`) VALUES (?,?,?,?,?,?,?,?,?)", new String[] {
+            getDatabase().update("INSERT INTO `raids` (`raidId`, `serverId`, `channelId`, `leader`, `name`, `description`, `date`, `time`, `roles`) VALUES (?,?,?,?,?,?,?,?,?)", new String[] {
                     messageId,
                     serverId,
                     channelId,
@@ -196,13 +195,13 @@ public class RaidManager {
             }
 
             try {
-                RaidBot.getInstance().getDatabase().update("DELETE FROM `raids` WHERE `raidId` = ?", new String[]{
+               getDatabase().update("DELETE FROM `raids` WHERE `raidId` = ?", new String[]{
                         messageId
                 });
-                RaidBot.getInstance().getDatabase().update("DELETE FROM `raidUsers` WHERE `raidId` = ?", new String[]{
+               getDatabase().update("DELETE FROM `raidUsers` WHERE `raidId` = ?", new String[]{
                         messageId
                 });
-                RaidBot.getInstance().getDatabase().update("DELETE FROM `raidUsersFlexRoles` WHERE `raidId` = ?",
+               getDatabase().update("DELETE FROM `raidUsersFlexRoles` WHERE `raidId` = ?",
                         new String[]{messageId});
             } catch (Exception e) {
                 System.out.println("Error encountered deleting raid");
