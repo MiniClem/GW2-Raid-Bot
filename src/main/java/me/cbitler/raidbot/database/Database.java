@@ -1,5 +1,6 @@
 package me.cbitler.raidbot.database;
 
+import me.cbitler.raidbot.database.models.raid.RaidsDao;
 import me.cbitler.raidbot.utility.Variables;
 
 import java.io.IOException;
@@ -21,6 +22,8 @@ import static me.cbitler.raidbot.utility.Variables.RaidBotProperty.VERSION_DATAB
 public class Database implements DatabaseOpenHelper {
 	private static Database INSTANCE;
 	private static Connection connection;
+
+	RaidsDao raidsDao;
 
 	@Override
 	public void onCreate() {
@@ -59,6 +62,7 @@ public class Database implements DatabaseOpenHelper {
 	public static void connect() {
 		if (INSTANCE == null) {
 			INSTANCE = new Database();
+			INSTANCE.raidsDao = new RaidsDao();
 		}
 		INSTANCE.onCreate();
 		INSTANCE.onUpgrade();

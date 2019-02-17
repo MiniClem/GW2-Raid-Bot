@@ -1,6 +1,7 @@
 package me.cbitler.raidbot.raids;
 
 import me.cbitler.raidbot.RaidBot;
+import me.cbitler.raidbot.database.models.raid.RaidRole;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 
@@ -257,9 +258,7 @@ public class Raid {
             }
         }
 
-        if(usersToFlexRoles.get(user) == null) {
-            usersToFlexRoles.put(user, new ArrayList<>());
-        }
+        usersToFlexRoles.computeIfAbsent(user, k -> new ArrayList<>());
 
         usersToFlexRoles.get(user).add(frole);
         if(update_message) {
@@ -320,7 +319,7 @@ public class Raid {
 
         final String finalLogLinkMessage = logLinkMessage;
         for(RaidUser user : this.userToRole.keySet()) {
-            RaidBot.getInstance().getServer(this.serverId).getMemberById(user.id).getUser().openPrivateChannel().queue(
+            RaidBot.getInstance().getServer(this.serverId).getMemberById(user.getId()).getUser().openPrivateChannel().queue(
                     privateChannel -> privateChannel.sendMessage(finalLogLinkMessage).queue()
             );
         }
@@ -370,7 +369,7 @@ public class Raid {
         for (Map.Entry<RaidUser, List<FlexRole>> flex : usersToFlexRoles.entrySet()) {
             if(flex.getKey() != null) {
                 for (FlexRole frole : flex.getValue()) {
-                    text += ("- " + flex.getKey().getName() + " (" + frole.spec + "/" + frole.role + ")\n");
+                    text += ("- " + flex.getKey().getName() + " (" + frole.getSpec() + "/" + frole.getRole() + ")\n");
                 }
             }
         }
@@ -385,9 +384,9 @@ public class Raid {
     private String buildRolesText() {
         String text = "";
         for(RaidRole role : roles) {
-            text += ("**" + role.name + " (" + role.amount + "):** \n");
-            for(RaidUser user : getUsersInRole(role.name)) {
-                text += "   - " + user.name + " (" + user.spec + ")\n";
+            text += ("**" + role.getName() + " (" + role.getAmount() + "):** \n");
+            for(RaidUser user : getUsersInRole(role.getName())) {
+                text += "   - " + user.getName() + " (" + user.getSpec() + ")\n";
             }
             text += "\n";
         }
@@ -401,7 +400,7 @@ public class Raid {
      */
     public RaidUser getUserByName(String name) {
         for(RaidUser user : userToRole.keySet()) {
-            if(user.name.equalsIgnoreCase(name)) {
+            if(user.getName().equalsIgnoreCase(name)) {
                 return user;
             }
         }
@@ -415,8 +414,8 @@ public class Raid {
     public void removeUserByName(String name) {
         String idToRemove = "";
         for(Map.Entry<RaidUser, String> entry : userToRole.entrySet()) {
-            if(entry.getKey().name.equalsIgnoreCase(name)) {
-                idToRemove = entry.getKey().id;
+            if(entry.getKey().getName().equalsIgnoreCase(name)) {
+                idToRemove = entry.getKey().getId();
             }
         }
 
@@ -432,7 +431,7 @@ public class Raid {
         for (Map.Entry<RaidUser, List<FlexRole>> entry : usersToFlexRoles.entrySet()) {
             RaidUser user = entry.getKey();
             if (user != null && user.getId() != null) {
-                if (user.id.equalsIgnoreCase(id)) {
+                if (user.getId().equalsIgnoreCase(id)) {
                     return entry.getValue().size();
                 }
             }

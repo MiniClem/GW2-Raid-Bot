@@ -36,9 +36,6 @@ public class RaidBot {
     HashMap<String, PendingRaid> pendingRaids = new HashMap<String, PendingRaid>();
     HashMap<String, SelectionStep> roleSelection = new HashMap<String, SelectionStep>();
 
-    //TODO: This should be moved to it's own settings thing
-    HashMap<String, String> raidLeaderRoleCache = new HashMap<>();
-
     /**
      * Create a new instance of the raid bot with the specified JDA api
      * @param jda The API for the bot to use
@@ -112,30 +109,6 @@ public class RaidBot {
         return jda;
     }
 
-    /**
-     * Get the raid leader role for a specific server.
-     * This works by caching the role once it's retrieved once, and returning the default if a server hasn't set one.
-     * @param serverId the ID of the server
-     * @return The name of the role that is considered the raid leader for that server
-     */
-    public String getRaidLeaderRole(String serverId) {
-        if (raidLeaderRoleCache.get(serverId) != null) {
-            return raidLeaderRoleCache.get(serverId);
-        } else {
-            try {
-                QueryResult results = Database.getDatabase().query("SELECT `raid_leader_role` FROM `serverSettings` WHERE `serverId` = ?",
-                        new String[]{serverId});
-                if (results.getResults().next()) {
-                    raidLeaderRoleCache.put(serverId, results.getResults().getString("raid_leader_role"));
-                    return raidLeaderRoleCache.get(serverId);
-                } else {
-                    return "Raid Leader";
-                }
-            } catch (Exception e) {
-                return "Raid Leader";
-            }
-        }
-    }
 
     /**
      * Set the raid leader role for a server. This also updates it in SQLite

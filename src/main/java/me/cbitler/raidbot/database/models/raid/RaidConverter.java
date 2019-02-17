@@ -1,7 +1,5 @@
 package me.cbitler.raidbot.database.models.raid;
 
-import me.cbitler.raidbot.raids.RaidRole;
-
 import java.util.List;
 
 public class RaidConverter {
@@ -17,9 +15,9 @@ public class RaidConverter {
         for (int i = 0; i < rolesWithNumbers.size(); i++) {
             RaidRole role = rolesWithNumbers.get(i);
             if(i == rolesWithNumbers.size() - 1) {
-                data += (role.amount + ":" + role.name);
+                data += (role.getAmount() + ":" + role.getName());
             } else {
-                data += (role.amount + ":" + role.name + ";");
+                data += (role.getAmount() + ":" + role.getName() + ";");
             }
         }
 

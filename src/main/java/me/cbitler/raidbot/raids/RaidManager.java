@@ -1,8 +1,8 @@
 package me.cbitler.raidbot.raids;
 
 import me.cbitler.raidbot.RaidBot;
-import me.cbitler.raidbot.database.Database;
 import me.cbitler.raidbot.database.QueryResult;
+import me.cbitler.raidbot.database.models.raid.RaidRole;
 import me.cbitler.raidbot.utility.Reactions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Emote;
@@ -42,7 +42,7 @@ public class RaidManager {
                     boolean inserted = insertToDatabase(raid, message1.getId(), message1.getGuild().getId(), message1.getChannel().getId());
                     if (inserted) {
                         Raid newRaid = new Raid(message1.getId(), message1.getGuild().getId(), message1.getChannel().getId(), raid.getLeaderName(), raid.getName(), raid.getDescription(), raid.getDate(), raid.getTime());
-                        newRaid.roles.addAll(raid.rolesWithNumbers);
+                        newRaid.getRoles().addAll(raid.getRolesWithNumbers());
                         raids.add(newRaid);
 
                         for (Emote emote : Reactions.getEmotes()) {
@@ -124,7 +124,7 @@ public class RaidManager {
                     String[] parts = roleAndAmount.split(":");
                     int amnt = Integer.parseInt(parts[0]);
                     String role = parts[1];
-                    raid.roles.add(new RaidRole(amnt, role));
+                    raid.getRoles().add(new RaidRole(amnt, role));
                 }
                 raids.add(raid);
             }
@@ -221,7 +221,7 @@ public class RaidManager {
     public static Raid getRaid(String messageId)
     {
         for(Raid raid : raids) {
-            if (raid.messageId.equalsIgnoreCase(messageId)) {
+            if (raid.getMessageId().equalsIgnoreCase(messageId)) {
                 return raid;
             }
         }
@@ -240,9 +240,9 @@ public class RaidManager {
         for (int i = 0; i < rolesWithNumbers.size(); i++) {
             RaidRole role = rolesWithNumbers.get(i);
             if(i == rolesWithNumbers.size() - 1) {
-                data += (role.amount + ":" + role.name);
+                data += (role.getAmount() + ":" + role.getName());
             } else {
-                data += (role.amount + ":" + role.name + ";");
+                data += (role.getAmount() + ":" + role.getName() + ";");
             }
         }
 
@@ -280,7 +280,7 @@ public class RaidManager {
     private static String buildRolesText(PendingRaid raid) {
         String text = "";
         for(RaidRole role : raid.getRolesWithNumbers()) {
-            text += ("**" + role.name + " (" + role.amount + "):** \n");
+            text += ("**" + role.getName() + " (" + role.getAmount() + "):** \n");
         }
         return text;
     }

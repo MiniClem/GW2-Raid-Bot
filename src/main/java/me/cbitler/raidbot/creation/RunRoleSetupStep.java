@@ -2,7 +2,7 @@ package me.cbitler.raidbot.creation;
 
 import me.cbitler.raidbot.RaidBot;
 import me.cbitler.raidbot.raids.PendingRaid;
-import me.cbitler.raidbot.raids.RaidRole;
+import me.cbitler.raidbot.database.models.raid.RaidRole;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 
 /**

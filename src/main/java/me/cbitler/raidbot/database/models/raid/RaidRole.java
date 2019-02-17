@@ -1,12 +1,12 @@
-package me.cbitler.raidbot.raids;
+package me.cbitler.raidbot.database.models.raid;
 
 /**
  * Represents a role that is available in a raid
  * @author Christopher Bitler
  */
 public class RaidRole {
-    int amount;
-    String name;
+    private int amount;
+    private String name;
 
     /**
      * Create a new RaidRole object

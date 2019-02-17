@@ -1,5 +1,7 @@
 package me.cbitler.raidbot.raids;
 
+import me.cbitler.raidbot.database.models.raid.RaidRole;
+
 import java.util.ArrayList;
 import java.util.List;
 
