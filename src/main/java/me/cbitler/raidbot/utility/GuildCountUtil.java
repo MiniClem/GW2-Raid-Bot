@@ -8,6 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
+import static me.cbitler.raidbot.utility.Variables.RaidBotProperty.DISCORD_TOKEN;
+
 public class GuildCountUtil {
     /**
      * Update the server count on DiscordBots.org, based off an example from their discord.
@@ -68,8 +70,6 @@ public class GuildCountUtil {
      * @throws IOException
      */
     private static String readToken() throws IOException {
-        BufferedReader br = new BufferedReader(
-                new FileReader(new File("discord_bots_token")));
-        return br.readLine();
+        return Variables.getINSTANCE().getStringProperty(DISCORD_TOKEN.toString());
     }
 }
