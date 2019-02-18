@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import static me.cbitler.raidbot.raids.RaidLeaderRole.addToRaidLeaderRole;
-import static me.cbitler.raidbot.raids.RaidLeaderRole.getRaidLeaderRoleByServerId;
+import static me.cbitler.raidbot.raids.RaidLeaderRoleCache.addToRaidLeaderRole;
+import static me.cbitler.raidbot.raids.RaidLeaderRoleCache.getRaidLeaderRoleByServerId;
 import static me.cbitler.raidbot.utility.Variables.RaidBotProperty.DATABASE;
 
 /**

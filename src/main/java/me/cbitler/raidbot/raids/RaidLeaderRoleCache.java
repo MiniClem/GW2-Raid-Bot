@@ -2,7 +2,7 @@ package me.cbitler.raidbot.raids;
 
 import java.util.HashMap;
 
-public class RaidLeaderRole {
+public class RaidLeaderRoleCache {
     private static final HashMap<String, String> raidLeaderRoleCache = new HashMap<>();
 
     public static HashMap<String, String> getRaidLeaderRoleCache(){
