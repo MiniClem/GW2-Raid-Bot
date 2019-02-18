@@ -1,6 +1,7 @@
 package me.cbitler.raidbot.utility;
 
 import me.cbitler.raidbot.RaidBot;
+import me.cbitler.raidbot.raids.RaidLeaderRole;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 
@@ -15,7 +16,7 @@ public class PermissionsUtil {
      * @return True if they have the role, false if they don't
      */
     public static boolean hasRaidLeaderRole(Member member) {
-        String raidLeaderRole = RaidBot.getInstance().getRaidLeaderRole(member.getGuild().getId());
+        String raidLeaderRole = RaidLeaderRole.getRaidLeaderRoleByServerId(member.getGuild().getId());
         for (Role role : member.getRoles()) {
             if (role.getName().equalsIgnoreCase(raidLeaderRole)) {
                 return true;
