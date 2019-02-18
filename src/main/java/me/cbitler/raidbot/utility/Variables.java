@@ -40,7 +40,7 @@ public class Variables {
 	 * Key names from the property file
 	 */
 	public enum RaidBotProperty{
-		DATABASE, DISCORD_TOKEN, RAIDAR_USERNAME, RAIDAR_PASSWORD, TEST
+		DATABASE, DISCORD_TOKEN, RAIDAR_USERNAME, RAIDAR_PASSWORD, DISCORD_EMOTE, TEST
 	}
 
 	public String getStringProperty(String key){
