@@ -4,8 +4,10 @@ import me.cbitler.raidbot.RaidBot;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.List;
 
 /**
  * Represents a raid and has methods for adding/removing users, user flex roles, etc
@@ -339,8 +341,10 @@ public class Raid {
      * Build the embedded message that shows the information about this raid
      * @return The embedded message representing this raid
      */
-    private MessageEmbed buildEmbed() {
+    public MessageEmbed buildEmbed() {
         EmbedBuilder builder = new EmbedBuilder();
+        Random rand = new Random();
+        builder.setColor(new Color(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255)));
         builder.setTitle(getName());
         builder.addField("Description:" , getDescription(), false);
         builder.addBlankField(false);
@@ -348,13 +352,13 @@ public class Raid {
             builder.addField("Leader: ", "**" + getRaidLeaderName() + "**", false);
         }
         builder.addBlankField(false);
-        builder.addField("Date: ", getDate(), true);
+        builder.setFooter("Date: " + getDate(), null);
         builder.addField("Time: ", getTime(), true);
         builder.addBlankField(false);
         builder.addField("Roles:", buildRolesText(), true);
         builder.addField("Flex Roles:", buildFlexRolesText(), true);
         builder.addBlankField(false);
-        builder.addField("ID: ", messageId, false);
+        builder.setAuthor("ID: " + messageId);
 
         return builder.build();
     }
