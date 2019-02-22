@@ -387,8 +387,9 @@ public class Raid {
     private String buildRolesText() {
         String text = "";
         for(RaidRole role : roles) {
-            text += ("**" + role.name + " (" + role.amount + "):** \n");
-            for(RaidUser user : getUsersInRole(role.name)) {
+            List<RaidUser> raidUsers = getUsersInRole(role.name);
+            text += ("**" + role.name + " (" + raidUsers.size() + "/" + role.amount + "):** \n");
+            for(RaidUser user : raidUsers) {
                 text += "   - " + user.name + " (" + user.spec + ")\n";
             }
             text += "\n";
