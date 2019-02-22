@@ -42,8 +42,6 @@ public class RaidBot {
     HashMap<String, PendingRaid> pendingRaids = new HashMap<String, PendingRaid>();
     HashMap<String, SelectionStep> roleSelection = new HashMap<String, SelectionStep>();
 
-    //TODO: This should be moved to it's own settings thing
-
     private static Database db;
 
     /**
