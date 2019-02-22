@@ -127,7 +127,10 @@ public class Raid {
 
         if(r != null) {
             int max = r.getAmount();
-            if(getUserNumberInRole(role) < max) {
+            // put the max back to the "10" place to change the maximum role allowed
+            // The role amount is now only for the users/raiders and help them know how
+            // many people are needed, more forgiving
+            if(getUserNumberInRole(role) < 10) {
                 return true;
             }
         }
