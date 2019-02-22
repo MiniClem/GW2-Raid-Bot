@@ -35,6 +35,9 @@ public class Reactions {
 			"Scourge" //387296198928891905
 	};
 
+	/**
+	 * This is my personnal list from my emote Discord server, it only work for meee :)
+	 */
 	static Emote[] customReactions = {
 			getExternalEmoji("547197405334994945"),     // <:X_:>
 			getExternalEmoji("547197404655517697"),     // <:Tempest:>
