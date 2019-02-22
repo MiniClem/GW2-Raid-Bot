@@ -37,26 +37,27 @@ public class Reactions {
 
 	static Emote[] customReactions = {
 			getExternalEmoji("547197405334994945"),     // <:X_:>
-			getExternalEmoji("547197405058301952"),     // <:Weaver:>
 			getExternalEmoji("547197404655517697"),     // <:Tempest:>
-			getExternalEmoji("547197404961832970"),     // <:Renegade:>
+			getExternalEmoji("547197405058301952"),     // <:Weaver:>
 			getExternalEmoji("547197404961832960"),     // <:Herald:>
-			getExternalEmoji("547197404764700674"),     // <:Scourge:>
+			getExternalEmoji("547197404961832970"),     // <:Renegade:>
 			getExternalEmoji("547197404940730368"),     // <:Reaper:>
+			getExternalEmoji("547197404764700674"),     // <:Scourge:>
 			getExternalEmoji("547197404957376552"),     // <:Scrapper:>
 			getExternalEmoji("547197404948987905"),     // <:Holosmith:>
 			getExternalEmoji("547197404605317133"),     // <:Dragonhunter:>
 			getExternalEmoji("547197404852649984"),     // <:Firebrand:>
-			getExternalEmoji("547197405087662110"),     // <:Soulbeast:>
 			getExternalEmoji("547197404609380383"),     // <:Druid:>
-			getExternalEmoji("547197404831547411"),     // <:Deadeye:>
+			getExternalEmoji("547197405087662110"),     // <:Soulbeast:>
 			getExternalEmoji("547197404630482946"),     // <:Daredevil:>
-			getExternalEmoji("547197404982542351"),     // <:Mirage:>
+			getExternalEmoji("547197404831547411"),     // <:Deadeye:>
 			getExternalEmoji("547197404747792415"),     // <:Chronomancer:>
-			getExternalEmoji("547197404655386646"),     // <:Spellbreaker:>
-			getExternalEmoji("547197404839936000")      // <:Berserker:>
+			getExternalEmoji("547197404982542351"),     // <:Mirage:>
+			getExternalEmoji("547197404839936000"),      // <:Berserker:>
+			getExternalEmoji("547197404655386646")     // <:Spellbreaker:>
 	};
 
+	// later maybe use this map of all emotes, there might be a soltion to make it cleaner
 //	final static Map<String, Emote> EMOTE_MAP = new HashMap<String, Emote>() {
 //		{
 //			put("X_", getExternalEmoji("547197405334994945"));   // <:X_:>
@@ -116,6 +117,10 @@ public class Reactions {
 
 	/**
 	 * Get the list of emote objects
+	 *
+	 * For instance you can choose between local (ie same Discord) or external Reactions from your own Discord server
+	 * for your raid Embed. You have to change the variable to put in the method asList, either customReaction or
+	 * the one I deleted...
 	 *
 	 * @return The emotes
 	 */
