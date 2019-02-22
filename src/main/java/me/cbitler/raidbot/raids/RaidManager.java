@@ -1,5 +1,7 @@
 package me.cbitler.raidbot.raids;
 
+import java.awt.Color;
+import java.util.Random;
 import me.cbitler.raidbot.RaidBot;
 import me.cbitler.raidbot.database.Database;
 import me.cbitler.raidbot.database.QueryResult;
@@ -258,6 +260,8 @@ public class RaidManager {
      */
     private static MessageEmbed buildEmbed(PendingRaid raid) {
         EmbedBuilder builder = new EmbedBuilder();
+        Random rand = new Random();
+        builder.setColor(new Color(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255)));
         builder.setTitle(raid.getName());
         builder.addField("Description:" , raid.getDescription(), false);
         builder.addBlankField(false);
@@ -265,7 +269,7 @@ public class RaidManager {
             builder.addField("Leader: ", "**" + raid.getLeaderName() + "**", false);
         }
         builder.addBlankField(false);
-        builder.addField("Date: ", raid.getDate(), true);
+        builder.setFooter("Date: " + raid.getDate(), null);
         builder.addField("Time: ", raid.getTime(), true);
         builder.addBlankField(false);
         builder.addField("Roles: ", buildRolesText(raid), true);
