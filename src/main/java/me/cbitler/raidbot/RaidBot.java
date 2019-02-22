@@ -1,6 +1,9 @@
 package me.cbitler.raidbot;
 
-import me.cbitler.raidbot.commands.*;
+import me.cbitler.raidbot.commands.CommandRegistry;
+import me.cbitler.raidbot.commands.EndRaidCommand;
+import me.cbitler.raidbot.commands.HelpCommand;
+import me.cbitler.raidbot.commands.InfoCommand;
 import me.cbitler.raidbot.creation.CreationStep;
 import me.cbitler.raidbot.database.Database;
 import me.cbitler.raidbot.database.QueryResult;
@@ -8,16 +11,20 @@ import me.cbitler.raidbot.handlers.ChannelMessageHandler;
 import me.cbitler.raidbot.handlers.DMHandler;
 import me.cbitler.raidbot.handlers.ReactionHandler;
 import me.cbitler.raidbot.raids.PendingRaid;
-import me.cbitler.raidbot.raids.Raid;
 import me.cbitler.raidbot.raids.RaidManager;
 import me.cbitler.raidbot.selection.SelectionStep;
 import me.cbitler.raidbot.utility.GuildCountUtil;
+import me.cbitler.raidbot.utility.Variables;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
+
+import static me.cbitler.raidbot.raids.RaidLeaderRoleCache.addToRaidLeaderRole;
+import static me.cbitler.raidbot.raids.RaidLeaderRoleCache.getRaidLeaderRoleByServerId;
+import static me.cbitler.raidbot.utility.Variables.RaidBotProperty.DATABASE;
 
 /**
  * Class representing the raid bot itself.
@@ -36,9 +43,8 @@ public class RaidBot {
     HashMap<String, SelectionStep> roleSelection = new HashMap<String, SelectionStep>();
 
     //TODO: This should be moved to it's own settings thing
-    HashMap<String, String> raidLeaderRoleCache = new HashMap<>();
 
-    Database db;
+    private static Database db;
 
     /**
      * Create a new instance of the raid bot with the specified JDA api
@@ -49,7 +55,11 @@ public class RaidBot {
 
         this.jda = jda;
         jda.addEventListener(new DMHandler(this), new ChannelMessageHandler(), new ReactionHandler());
-        db = new Database("raid.db");
+        try {
+            db = new Database(Variables.getINSTANCE().getStringProperty(DATABASE.toString()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         db.connect();
         RaidManager.loadRaids();
 
@@ -129,15 +139,15 @@ public class RaidBot {
      * @return The name of the role that is considered the raid leader for that server
      */
     public String getRaidLeaderRole(String serverId) {
-        if (raidLeaderRoleCache.get(serverId) != null) {
-            return raidLeaderRoleCache.get(serverId);
+        if (getRaidLeaderRoleByServerId(serverId) != null) {
+            return getRaidLeaderRoleByServerId(serverId);
         } else {
             try {
-                QueryResult results = db.query("SELECT `raid_leader_role` FROM `serverSettings` WHERE `serverId` = ?",
+                QueryResult results = getDatabase().query("SELECT `raid_leader_role` FROM `serverSettings` WHERE `serverId` = ?",
                         new String[]{serverId});
                 if (results.getResults().next()) {
-                    raidLeaderRoleCache.put(serverId, results.getResults().getString("raid_leader_role"));
-                    return raidLeaderRoleCache.get(serverId);
+                    addToRaidLeaderRole(serverId, results.getResults().getString("raid_leader_role"));
+                    return getRaidLeaderRoleByServerId(serverId);
                 } else {
                     return "Raid Leader";
                 }
@@ -153,7 +163,7 @@ public class RaidBot {
      * @param role The role name
      */
     public void setRaidLeaderRole(String serverId, String role) {
-        raidLeaderRoleCache.put(serverId, role);
+        addToRaidLeaderRole(serverId, role);
         try {
             db.update("INSERT INTO `serverSettings` (`serverId`,`raid_leader_role`) VALUES (?,?)",
                     new String[] { serverId, role});

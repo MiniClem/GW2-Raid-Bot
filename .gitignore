@@ -6,3 +6,8 @@ token
 dependency-reduced-pom.xml
 discord_bots_token
 .env
+guilds
+
+src/main/resources/configuration\.properties
+
+*.properties
